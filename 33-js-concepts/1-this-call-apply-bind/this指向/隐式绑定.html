@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>隐式绑定</title>
+  </head>
+  <body>
+    <script>
+      // 直接赋值
+      var name = 'windowName';
+      var a = {
+        name: 'Cherry',
+        fn: function() {
+          console.log(this.name); // Cherry
+        }
+      };
+      a.fn();
+
+      var b = a.fn;
+      b(); // undefined b 被全局对象调用
+
+      // 例子：传入回调参数
+      var name = 'windowsName';
+      var a = {
+        name: 'Cherry',
+
+        func1: function() {
+          console.log(this.name);
+        },
+
+        func2: function() {
+          setTimeout(function() {
+            console.log('this :', this);
+            this.func1(); // this 为 window
+          }, 100);
+        }
+      };
+
+      a.func2(); // this.func1 is not a function
+    </script>
+  </body>
+</html>

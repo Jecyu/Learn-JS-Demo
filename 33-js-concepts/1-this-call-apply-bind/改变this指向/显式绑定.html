@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>显式绑定 </title>
+  </head>
+  <body>
+    <h1>显式绑定 bind/call/apply</h1>
+    <h2>F12/Ctrl+Option+I 查看控制台打印</h2>
+    <script>
+      const name = 'windowsName';
+      const a = {
+        name: 'Cherry',
+
+        func1: function() {
+          console.log(this.name);
+        },
+
+        func2: function() {
+          setTimeout(
+            function() {
+              console.log('this:', this); // a
+              this.func1();
+            }.apply(a), // call, apply, bind
+            100
+          ); // setTimeout
+        }
+      };
+
+      a.func2();
+    </script>
+  </body>
+</html>
