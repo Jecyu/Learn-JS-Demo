@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>02-从外部读取局部变量</title>
+</head>
+<body>
+  <script>
+    function f1() {
+      var n = 999;
+      // 函数f2就被包括在函数f1内部，这时f1内部的所有局部变量，对f2都是可见的。
+      // 但是反过来就不行，f2内部的局部变量，对f1就是不可见的
+      function f2() {
+        alert(n);
+      }
+      // 既然f2可以读取f1中的局部变量，那么只要把f2作为返回值，我们不就可以在f1外部读取它的内部变量了吗！
+      return f2;
+    }
+    var result = f1();
+    result(); // 999
+
+    // 必备的概念：闭包就是能够读取其他函数内部变量的函数，闭包就是将函数内部和函数外部连接起来的一座桥梁
+  </script>
+</body>
+</html>
