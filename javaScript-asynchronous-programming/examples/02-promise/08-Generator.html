@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>08-Generator</title>
+</head>
+<body>
+  <h1>Generator</h1>
+  <script>
+    function *addGenerator() {
+      let i = 0;
+      while(true) {
+        i += yield i;
+      }
+    }
+
+    const adder = addGenerator(); // 生成器对象
+    console.log(adder.next().value); // 0
+    console.log(adder.next(5).value); // 5
+    console.log(adder.next(5).value); // 10
+    console.log(adder.next(5).value); // 15
+    console.log(adder.next(50).value); // 65
+  </script>
+</body>
+</html>

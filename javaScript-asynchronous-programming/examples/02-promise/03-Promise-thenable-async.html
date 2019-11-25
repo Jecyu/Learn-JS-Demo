@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>02-Promise-Thenable-Handle-Value</title>
+</head>
+<body>
+  <h1>Promise-Thenable-Handle-Value</h1>
+  <script>
+    function get(url) {
+      // 返回一个 Promise
+      return new Promise(function(resolve, reject) {
+        const req = new XMLHttpRequest();
+        req.open('GET', url);
+
+        req.onload = function() {
+          if (req.status === 200) {
+            resolve(req.response);
+          } else {
+            reject(Error(req.statusText));
+          }
+        }
+
+        // 处理网络错误
+        req.onerror = function() {
+          reject(Error('Network Error'));
+        }
+
+        // 发起请求
+        req.send();
+      })
+    }  
+
+    function getJSON(url) {
+      return get(url).then(JSON.parse);
+    }
+
+    // 调用
+    // getJSON('story.json').then(function(response) {
+    //   console.log('Success!', response);
+    //   return getJSON(response.chapterUrls[0])
+    // }).then(function(response) {
+    //   console.log('Got chapter 1', response);
+    // })
+
+    // 进行优化，重用已经加载的 stroy.json promise
+    let stroyPromise;
+    function getChapter(i) {
+      stroyPromise = stroyPromise || getJSON('story.json');
+
+      return stroyPromise.then(function(story) {
+        return getJSON(story.chapterUrls[i]);
+      })
+    }
+    // 调用
+    getChapter(0).then(function(chapter) {
+      console.log(chapter);
+      return getChapter(1)
+    }).then(function (chapter) {
+      console.log(chapter);
+    })
+  </script>
+</body>
+</html>

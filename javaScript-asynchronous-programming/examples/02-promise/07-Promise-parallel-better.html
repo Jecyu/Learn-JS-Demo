@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>06-Promise-Parallel-all</title>
+</head>
+<body>
+  <h1>Promise-Parallel-all</h1>
+  <div id="content">
+    <div class="spinner-border" style="dispaly: none" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <script>
+    function get(url) {
+      // 返回一个 Promise
+      return new Promise(function(resolve, reject) {
+        const req = new XMLHttpRequest();
+        req.open('GET', url);
+
+        req.onload = function() {
+          if (req.status === 200) {
+            resolve(req.response);
+          } else {
+            reject(Error(req.statusText));
+          }
+        }
+
+        // 处理网络错误
+        req.onerror = function() {
+          reject(Error('Network Error'));
+        }
+
+        // 发起请求
+        req.send();
+      })
+    }  
+
+    function getJSON(url) {
+      return get(url).then(JSON.parse);
+    }
+    function addHtmlToPage(str) {
+      const div = document.createElement('div');
+      div.innerHTML = str;
+      document.querySelector('#content').appendChild(div);
+    }
+    function addTextToPage(str) {
+      const div = document.createElement('div');
+      div.innerHTML = str;
+      document.querySelector('#content').appendChild(div);
+    }
+
+
+    // 调用
+    getJSON('story.json').then(function(response) {
+      console.log('Success!', response);
+    //第一章内容加载完毕我们可以立即填进页面，这样用户可以在其他加载任务尚未完成之前就开始阅读；当第三章到达的时候我们不动声色，第二章也到达之后我们再把第二章和第三章内容填入页面，以此类推。
+    // 为了达到这样的效果，我们同时请求所有的章节内容，然后创建一个序列依次将其填入页面：
+      return response.chapterUrls.map(getJSON)
+        .reduce(function(sequence, chapterPromise) {
+          return sequence.then(function() {
+            return chapterPromise;
+          }).then(function(chapter) {
+            addHtmlToPage(chapter.html)
+          })
+        }, Promise.resolve()) 
+    }).then(function(chapters) {
+        addTextToPage("All done");
+      }).catch(function(err) {
+        console.log('err', err);
+        addTextToPage('Failed to show chapter')
+      }).then(function() {
+        document.querySelector('.spinner-border').style.display = "none";
+      })
+  </script>
+</body>
+</html>
