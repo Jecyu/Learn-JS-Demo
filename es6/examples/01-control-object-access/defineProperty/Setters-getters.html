@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Setter-Getters</title>
+</head>
+<body>
+<script>
+  const obj = {};
+  let value = null;
+  Object.defineProperty(obj, "num", {
+    get: function() {
+      console.log("执行了 get 操作");
+      return value;
+    },
+    set: function(newValue) {
+      console.log("执行了 set 操作", "oldVal: " + value, "newValue: " + newValue);
+      value = newValue;
+    }
+  })
+  obj.num = 1; // 执行了 set 操作
+  console.log(obj.num); // 执行了 get 操作
+  </script>
+  <script>
+    // 进行封装
+    function Archiver() {
+      let value = null;
+      const archive = [];
+
+      Object.defineProperty(this, "num", {
+        get: function() {
+          console.log("执行了 get 操作");
+          return value;
+        },
+        set: function(newValue) {
+          console.log("执行了 set 操作");
+          value = newValue;
+          archive.push({ val: newValue})
+        }
+      })
+      this.getArchive = function() { return archive; }
+    }
+    const arc = new Archiver();
+    console.log(arc.num); // 执行了 get 操作
+    arc.num = 11;
+    arc.num = 13;
+    console.log(arc.getArchive());
+  </script>
+</body>
+</html>
