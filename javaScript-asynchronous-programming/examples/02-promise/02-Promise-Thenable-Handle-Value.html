@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>02-Promise-Thenable-Handle-Value</title>
+</head>
+<body>
+  <h1>Promise-Thenable-Handle-Value</h1>
+  <script>
+    function get(url) {
+      // 返回一个 Promise
+      return new Promise(function(resolve, reject) {
+        const req = new XMLHttpRequest();
+        req.open('GET', url);
+
+        req.onload = function() {
+          if (req.status === 200) {
+            resolve(req.response);
+          } else {
+            reject(Error(req.statusText));
+          }
+        }
+
+        // 处理网络错误
+        req.onerror = function() {
+          reject(Error('Network Error'));
+        }
+
+        // 发起请求
+        req.send();
+      })
+    }  
+
+    // 调用
+    get('story.json').then(function(response) {
+      console.log('Success!', response);
+      return JSON.parse(response);
+    }).then(function(response) {
+      console.log('Yey JSON!', response);
+    })
+  </script>
+</body>
+</html>

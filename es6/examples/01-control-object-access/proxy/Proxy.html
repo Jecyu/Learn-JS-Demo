@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Proxy</title>
+</head>
+<body>
+  <script>
+    const proxy = new Proxy({}, {
+      get: function(obj, prop) {
+        console.log('设置 get 操作');
+        return obj[prop];
+      },
+      set: function(obj, prop, value) {
+        console.log('设置 set 操作');
+        obj[prop] = value;
+      }
+    })
+
+    proxy.time = 35; // 设置 set 操作
+    proxy.name = 'Jecyu'; // 设置 set 操作
+    console.log(proxy.time); // get 操作
+    console.log(proxy.name); // get 操作
+  </script>
+</body>
+</html>

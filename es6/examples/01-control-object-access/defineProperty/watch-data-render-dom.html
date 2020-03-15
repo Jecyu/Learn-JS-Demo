@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>数据驱动视图</title>
+</head>
+<body>
+  <span id="container">1</span>
+  <button id="button">点击加1</button>
+  <!-- <script>
+    // 传统的做法
+    document.getElementById('button').addEventListener('click', function() {
+      const container = document.getElementById('container');
+      container.innerHTML = Number(container.innerHTML) + 1;
+    })
+  </script> -->
+
+  <!-- <script>
+    // 使用 defineProperty 实现改变数据，驱动更新 DOM
+    const obj = { value: 1 }
+    let value = 1; // 储存 obj.value 的值
+    Object.defineProperty(obj, "value", {
+      get: function() {
+        // return obj.value;
+        return value;
+      },
+      set: function(newValue) {
+        // obj.value = newValue; // 直接使用 obj.value = newValue 会导致栈溢出，不断调用 set 函数，因此需要一个中间变量
+        value = newValue;
+        document.getElementById('container').innerHTML = newValue;
+      }
+    })
+    document.getElementById('button').addEventListener('click', function() {
+      obj.value +=1;
+    })
+  </script> -->
+  
+  <script>
+     // 上面的写法，我们还需要单独声明一个变量存储 obj.value 的值，因为如果你在 set 中直接 obj.value = newValue 就会陷入无限的循环中。此外，我们可能需要监控很多属性值的改变，要是一个一个写，也很累呐，所以我们简单写个 watch 函数。
+    (function() {
+      const root = this;
+      function watch(obj, name, callback) {
+        let value = obj[name]; // 缓存值
+        Object.defineProperty(obj, name, {
+          get: function() {
+            return value;
+          },
+          set: function(newValue) {
+            value = newValue;
+            callback(value);
+          }
+        })
+      }
+      this.watch = watch;
+    })()
+
+    const obj = { value: 1, age: 0 }
+
+    watch(obj, "value", function(newValue) {
+      document.getElementById('container').innerHTML = newValue; 
+    })
+    // watch(obj, "age", function(newValue) {
+    //   document.getElementById('container').innerHTML = newValue; 
+    // })
+ 
+    document.getElementById('button').addEventListener('click', function() {
+      obj.value +=1;
+      // obj.age += 1; // defineProperty 需要重新定义属性的 get 和 set 才能监听到数据的变化
+    })
+  </script>
+</body>
+</html>

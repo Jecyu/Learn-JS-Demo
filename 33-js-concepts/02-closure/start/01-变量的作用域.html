@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>变量的作用域</title>
+</head>
+<body>
+  <script>
+    var n = 999;
+    function f1() {
+      alert(n);
+    }
+    f1(); // 999
+
+    // 另一方面，在函数外部无法读取函数内的局部变量
+    function f2() {
+      var m = 888;  // 这里要注意，函数内部声明变量的时候，一定要用 var 命令。如果不用的话，你实际上声明了一个全局变量。
+    }
+    alert(m); // error
+  </script>
+</body>
+</html>

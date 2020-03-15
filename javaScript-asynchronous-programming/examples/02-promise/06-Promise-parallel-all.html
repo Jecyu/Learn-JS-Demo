@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>06-Promise-Parallel-all</title>
+</head>
+<body>
+  <h1>Promise-Parallel-all</h1>
+  <div id="content">
+    <div class="spinner-border" style="dispaly: none" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <script>
+    function get(url) {
+      // 返回一个 Promise
+      return new Promise(function(resolve, reject) {
+        const req = new XMLHttpRequest();
+        req.open('GET', url);
+
+        req.onload = function() {
+          if (req.status === 200) {
+            resolve(req.response);
+          } else {
+            reject(Error(req.statusText));
+          }
+        }
+
+        // 处理网络错误
+        req.onerror = function() {
+          reject(Error('Network Error'));
+        }
+
+        // 发起请求
+        req.send();
+      })
+    }  
+
+    function getJSON(url) {
+      return get(url).then(JSON.parse);
+    }
+    function addHtmlToPage(str) {
+      const div = document.createElement('div');
+      div.innerHTML = str;
+      document.querySelector('#content').appendChild(div);
+    }
+    function addTextToPage(str) {
+      const div = document.createElement('div');
+      div.innerHTML = str;
+      document.querySelector('#content').appendChild(div);
+    }
+
+
+    // 调用
+    getJSON('story.json').then(function(response) {
+      console.log('Success!', response);
+      // Promise.all 接受一个 Promise 数组为参数，创建一个当所有 Promise 都完成之后就完成的 Promise，它的完成结果是一个数组，包含了所有先前传入的那些 Promise 的完成结果，顺序和将它们传入的数组顺序一致。
+      // 浏览器章节加载完成的顺序不确定，但它们显示在页面上的顺序准确无误。
+      // return response.chapterUrls.reduce(function(sequence, chapterUrl) {
+      //   return sequence.then(function() {
+      //     // 获取下一章节
+      //     return getJSON(chapterUrl);
+      //   }).then(function(chapter) {
+      //     addHtmlToPage(chapter.html);
+      //   });
+      // }, Promise.resolve());
+      return Promise.all(response.chapterUrls.map(getJSON));
+    }).then(function(chapters) {
+        chapters.forEach(function(chapter) {
+          addHtmlToPage(chapter.html);
+        })
+        addTextToPage("All done");
+      }).catch(function(err) {
+        console.log('err', err);
+        addTextToPage('Failed to show chapter')
+      }).then(function() {
+        document.querySelector('.spinner-border').style.display = "none";
+      })
+  </script>
+</body>
+</html>

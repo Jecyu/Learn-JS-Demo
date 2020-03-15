@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>数据驱动视图</title>
+</head>
+<body>
+  <span id="container">1</span>
+  <button id="button">点击加1</button>
+  <script>
+    (function() {
+      const root = this;
+      function watch(target, callback) {
+        const proxy = new Proxy(target, {
+          get: function(target, prop) {
+            return target[prop];
+          },
+          set: function(target, prop, value) {
+            target[prop] = value;
+            callback(prop, value)
+          }
+        })
+        return proxy;
+      }
+      this.watch = watch;
+    })()
+
+    const obj = { value: 1, age: 0 }
+
+    const newObj = watch(obj, function(key, newValue) {
+      console.log(key) //  proxy 代理了整个对象，因此任何的属性变化都会监听到，当然包括 age
+      if (key === 'value') {
+        document.getElementById('container').innerHTML = newValue; 
+      }
+    })
+ 
+    document.getElementById('button').addEventListener('click', function() {
+      // newObj.value +=1; // 使用 proxy 需要修改代理对象，即 Proxy 的实例才可以触发拦截。
+      newObj.age += 1;  // proxy 代理了整个对象
+    })
+  </script>
+</body>
+</html>
